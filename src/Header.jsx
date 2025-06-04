@@ -1,6 +1,6 @@
 // src/Header.jsx
-const CLIENT_ID = "CUfHhpLopY93670f"; // replace with your client ID
-const REDIRECT_URI = "http://localhost:5173/callback";
+const CLIENT_ID = "CUfHhpLopY93670f"; // Client ID
+const REDIRECT_URI = import.meta.env.VITE_ARCGIS_REDIRECT_URI;
 
 function Header() {
   function login() {
