@@ -16,10 +16,18 @@ export default function Signup() {
         body: JSON.stringify({ username, password }),
       });
 
+      if (response.status === 409) {
+        setError("Username already exists. Try another.");
+        return;
+      }
+
       if (!response.ok) throw new Error("Signup failed");
 
-      // Optionally auto-login or redirect
-      navigate("/login");
+      // Optionally auto-login after signup
+      const data = await response.json();
+      localStorage.setItem("username", username);
+      localStorage.setItem("token", data.token || "fake-token");
+      navigate("/map");
     } catch (err) {
       setError("Could not sign up. Try a different username.");
     }
@@ -27,27 +35,27 @@ export default function Signup() {
 
   return (
     <div style={{ padding: "2rem" }}>
-      <h2>Create an Account</h2>
+      <h2>Sign Up</h2>
       <form onSubmit={handleSignup}>
-        <div>
-          <input
-            type="text"
-            placeholder="Choose a username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
         <div style={{ marginTop: "0.5rem" }}>
           <input
             type="password"
-            placeholder="Create a password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
         </div>
-        <button type="submit" style={{ marginTop: "1rem" }}>Sign Up</button>
+        <button type="submit" style={{ marginTop: "1rem" }}>
+          Sign Up
+        </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </div>
