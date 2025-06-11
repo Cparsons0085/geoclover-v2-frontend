@@ -24,7 +24,7 @@ function Header() {
     <header style={{ padding: "1rem", background: "#f5f5f5" }}>
       {username ? (
         <>
-          <span>🍀 Welcome, {username}!</span>
+          <span className="welcome-text">🍀 Welcome, {username}!</span>
           <button onClick={handleLogout} style={{ marginLeft: "1rem" }}>
             Logout
           </button>

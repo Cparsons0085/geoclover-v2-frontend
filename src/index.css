@@ -98,4 +98,14 @@ button:focus-visible {
     font-size: 2em;
   }
 }
+/* ------------------------------------------------------------------
+   Welcome-text styling
+   ------------------------------------------------------------------ */
+.welcome-text {
+  color: #2e7d32;            /* dark green */
+  background-color: #e8f5e9; /* light green tint */
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+}
 
