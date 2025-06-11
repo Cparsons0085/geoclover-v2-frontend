@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← Add this
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // ← Add this
+  const navigate = useNavigate();
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -20,9 +20,9 @@ export default function Login({ onLogin }) {
 
       const data = await response.json();
       localStorage.setItem("username", username);
-      localStorage.setItem("token", data.token); // fake token for now
-      onLogin(username);
-      navigate("/map"); // ← Redirect to the map (MapPage) after login
+      localStorage.setItem("token", data.token);
+      onLogin?.(username);
+      navigate("/map");
     } catch (err) {
       setError("Invalid login. Try again.");
     }
@@ -50,9 +50,19 @@ export default function Login({ onLogin }) {
             required
           />
         </div>
-        <button type="submit" style={{ marginTop: "1rem" }}>Log In</button>
+        <button type="submit" style={{ marginTop: "1rem" }}>
+          Log In
+        </button>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
+
+      {/* Add this: */}
+      <p style={{ marginTop: "1rem" }}>
+        Don't have an account?{" "}
+        <button onClick={() => navigate("/signup")} style={{ textDecoration: "underline", background: "none", border: "none", color: "blue", cursor: "pointer" }}>
+          Sign up
+        </button>
+      </p>
     </div>
   );
 }
