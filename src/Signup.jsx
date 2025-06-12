@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [username, setUsername] = useState("");
@@ -9,21 +9,25 @@ export default function Signup() {
 
   async function handleSignup(e) {
     e.preventDefault();
+    setError(null);
+
     try {
-      const response = await fetch("https://geoclover-v2-backend-production.up.railway.app/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        }
+      );
 
       if (response.status === 409) {
         setError("Username already exists. Try another.");
         return;
       }
-
       if (!response.ok) throw new Error("Signup failed");
 
-      // Optionally auto-login after signup
+      // Auto-login after signup
       const data = await response.json();
       localStorage.setItem("username", username);
       localStorage.setItem("token", data.token || "fake-token");
@@ -56,8 +60,23 @@ export default function Signup() {
         <button type="submit" style={{ marginTop: "1rem" }}>
           Sign Up
         </button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
+
+      {error && (
+        <div style={{ marginTop: "1rem", color: "red" }}>
+          {error}{" "}
+          <Link to="/login" style={{ textDecoration: "underline", color: "blue" }}>
+            Back to Login
+          </Link>
+        </div>
+      )}
+
+      <p style={{ marginTop: "1rem" }}>
+        Already have an account?{" "}
+        <Link to="/login" style={{ textDecoration: "underline", color: "blue" }}>
+          Log in here
+        </Link>
+      </p>
     </div>
   );
 }
