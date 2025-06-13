@@ -10,7 +10,8 @@ export default function Login({ onLogin }) {
   async function handleLogin(e) {
     e.preventDefault();
     try {
-      const response = await fetch("https://geoclover-v2-backend-production.up.railway.app/api/login", {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
