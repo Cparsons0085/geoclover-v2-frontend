@@ -37,12 +37,15 @@
 
 ## ⚙️ Environment Variables
 
-Create two files in the project root (already in `.gitignore`):
+The project uses Vite environment variables to connect the frontend to the backend API and ArcGIS Online web mapping services.
 
-### `.env.development`
+Create the following environment variable files in the project root (already listed in `.gitignore`):
 
-```dotenv
-VITE_ARCGIS_CLIENT_ID=yourArcGISClientID
-VITE_ARCGIS_REDIRECT_URI=https://geoclover-app.netlify.app/login/callback
-VITE_BACKEND_URL=https://geoclover-v2-backend.onrender.com
+### `.env.development` (for local development)
+```env
+VITE_BACKEND_URL=http://localhost:3000
+VITE_ARCGIS_VIEW_URL=https://services1.arcgis.com/.../GeoCloverPins_4view/FeatureServer/0
+
+.env.production (for Netlify deployment)
+VITE_BACKEND_URL=https://your-backend-url.onrender.com
 VITE_ARCGIS_VIEW_URL=https://services1.arcgis.com/.../GeoCloverPins_4view/FeatureServer/0
