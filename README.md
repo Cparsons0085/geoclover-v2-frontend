@@ -43,6 +43,6 @@ Create two files in the project root (already in `.gitignore`):
 
 ```dotenv
 VITE_ARCGIS_CLIENT_ID=yourArcGISClientID
-VITE_ARCGIS_REDIRECT_URI=http://localhost:5173/callback
-VITE_BACKEND_URL=http://localhost:3000
+VITE_ARCGIS_REDIRECT_URI=https://geoclover-app.netlify.app/login/callback
+VITE_BACKEND_URL=https://geoclover-v2-backend.onrender.com
 VITE_ARCGIS_VIEW_URL=https://services1.arcgis.com/.../GeoCloverPins_4view/FeatureServer/0
