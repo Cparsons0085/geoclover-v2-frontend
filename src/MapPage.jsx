@@ -49,20 +49,23 @@ export default function MapPage() {
         zoom: 4
       });
 
+      // Use your clover symbol for all pins
+      const CLOVER_SYMBOL_URL = "/clover.png";
+      
       // Real-time socket listener
       socketRef.current.on("add-pin", ({ lat, lng, username, imageUrl }) => {
-        const symbol = new PictureMarkerSymbol({ url: imageUrl, width: "32px", height: "32px" });
+        const symbol = new PictureMarkerSymbol({ url: CLOVER_SYMBOL_URL, width: "32px", height: "32px" });
         const graphic = new Graphic({
           geometry: { type: "point", x: lng, y: lat, spatialReference: view.spatialReference },
           symbol,
-          attributes: { username },
+          attributes: { username, imageUrl },
           popupTemplate: {
             title: "{username}",
             content: `<img src="${imageUrl}" style="max-width:200px;"/>`
-          }
-        });
-        editLayer.add(graphic);
-      });
+        }
+    });
+    editLayer.add(graphic);
+});
 
       // Polling function
       async function fetchPins() {
@@ -73,7 +76,7 @@ export default function MapPage() {
           features.forEach(f => {
             const { x, y } = f.geometry;
             const { username, imageUrl } = f.attributes;
-            const symbol = new PictureMarkerSymbol({ url: imageUrl, width: "32px", height: "32px" });
+            const symbol = new PictureMarkerSymbol({ url: CLOVER_SYMBOL_URL, width: "32px", height: "32px" });
             const graphic = new Graphic({
               geometry: { type: "point", x, y, spatialReference: view.spatialReference },
               symbol,
