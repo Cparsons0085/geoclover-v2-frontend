@@ -6,16 +6,17 @@ import "@arcgis/core/assets/esri/themes/light/main.css";
 import PictureMarkerSymbol from "@arcgis/core/symbols/PictureMarkerSymbol";
 import Graphic from "@arcgis/core/Graphic";
 
-console.log(">> ARCGIS QUERY URL:", import.meta.env.VITE_ARCGIS_LAYER_QUERY_URL);
-
 export default function MapPage() {
   const mapRef = useRef(null);
   const socketRef = useRef(null);
   const fileInputRef = useRef(null);
   const [coords, setCoords] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [viewRef, setViewRef] = useState(null);
 
   // Polling URL
   const QUERY_URL = import.meta.env.VITE_ARCGIS_LAYER_QUERY_URL;
+  const CLOVER_SYMBOL_URL = "/clover.png";
 
   useEffect(() => {
     let view;
@@ -49,9 +50,8 @@ export default function MapPage() {
         zoom: 4
       });
 
-      // Use your clover symbol for all pins
-      const CLOVER_SYMBOL_URL = "/clover.png";
-      
+      setViewRef(view);
+
       // Real-time socket listener
       socketRef.current.on("add-pin", ({ lat, lng, username, imageUrl }) => {
         const symbol = new PictureMarkerSymbol({ url: CLOVER_SYMBOL_URL, width: "32px", height: "32px" });
@@ -62,14 +62,15 @@ export default function MapPage() {
           popupTemplate: {
             title: "{username}",
             content: `<img src="${imageUrl}" style="max-width:200px;"/>`
-        }
-    });
-    editLayer.add(graphic);
-});
+          }
+        });
+        editLayer.add(graphic);
+      });
 
       // Polling function
       async function fetchPins() {
         try {
+          editLayer.removeAll();
           const url = `${QUERY_URL}?where=1%3D1&outFields=*&f=json`;
           const res = await fetch(url);
           const { features } = await res.json();
@@ -88,40 +89,50 @@ export default function MapPage() {
             });
             editLayer.add(graphic);
           });
+          setIsLoading(false); // Hide loading after pins are fetched
         } catch (err) {
           console.error("Polling error:", err);
+          setIsLoading(false);
         }
       }
 
       // Start polling every 15s
       fetchPins();
       pollingHandle = setInterval(fetchPins, 15000);
-
-      // Map click handler
-      view.on("click", event => {
-        console.log("map click at", { lat: event.mapPoint.y, lng: event.mapPoint.x });
-        const username = localStorage.getItem("username");
-        if (!username) {
-          view.popup.open({ title: "Not signed in", content: "Please log in before dropping a pin.", location: event.mapPoint });
-          return;
-        }
-        setCoords({ lat: event.mapPoint.y, lng: event.mapPoint.x });
-        fileInputRef.current.click();
-      });
     });
 
     // Cleanup
     return () => {
-      if (view) view.destroy();
+      if (viewRef) viewRef.destroy();
       if (socketRef.current) socketRef.current.disconnect();
       if (pollingHandle) clearInterval(pollingHandle);
     };
+    // eslint-disable-next-line
   }, []);
+
+  // Handler for the button
+  async function handleLuckClick() {
+    // Get user location
+    setIsLoading(true);
+    navigator.geolocation.getCurrentPosition((pos) => {
+      setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      if (viewRef) {
+        viewRef.goTo({ center: [pos.coords.longitude, pos.coords.latitude], zoom: 16 });
+      }
+      fileInputRef.current.click();
+    }, () => {
+      setIsLoading(false);
+      alert("Could not get your location.");
+    });
+  }
 
   // File input handler
   function handleFileChange(e) {
     const file = e.target.files[0];
-    if (!file || !coords) return;
+    if (!file || !coords) {
+      setIsLoading(false);
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       socketRef.current.emit("new-pin", {
@@ -130,6 +141,8 @@ export default function MapPage() {
         lng: coords.lng,
         imageUrl: reader.result
       });
+      // Wait for ArcGIS layer to refresh (after next polling)
+      setTimeout(() => setIsLoading(false), 16000); // Wait for next poll (15s)
     };
     reader.readAsDataURL(file);
   }
@@ -137,6 +150,15 @@ export default function MapPage() {
   return (
     <>
       <Header />
+      <button onClick={handleLuckClick} style={{ margin: "10px", fontSize: "1.2em" }}>
+        Don't Pluck Your Luck!
+      </button>
+      {isLoading && (
+        <div className="loading-overlay">
+          {/* Replace this with a mini-game or animation if you want */}
+          <div className="spinner">🌱 Loading your luck...</div>
+        </div>
+      )}
       <div style={{ height: "90vh", width: "100%" }} ref={mapRef} />
       <input
         ref={fileInputRef}
