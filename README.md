@@ -4,11 +4,11 @@
   </a>
 </p>
 
-# GeoClover-v2 Frontend
+# 🍀 GeoClover-v2 Frontend 🍀
 
 > A React + Vite app for GeoClover-v2: explore and document four-leaf clover sightings on an interactive map.
 
-🌱 **Live App:** https://geoclover-app.netlify.app
+🍀 **Live App:** https://geoclover-app.netlify.app 
 ---
 
 ## 👩‍💻 About Me
